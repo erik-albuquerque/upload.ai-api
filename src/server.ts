@@ -1,12 +1,11 @@
 import { fastify } from 'fastify'
+import { getAllPromptsRoute } from './routes'
 
 const app = fastify()
 
 const port = Number(process.env.PORT) || 3333 
 
-app.get('/', () => {
-  return 'hello from api'
-})
+app.register(getAllPromptsRoute)
 
 app.listen({
   port
