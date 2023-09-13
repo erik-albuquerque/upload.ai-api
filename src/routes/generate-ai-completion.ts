@@ -20,9 +20,10 @@ export async function generateAICompletionRoute(app: FastifyInstance) {
       })
 
       if (!video.transcription) {
-        return res
-          .status(400)
-          .send({ message: 'Video transcription was not generated yet.' })
+        return res.status(400).send({
+          statusCode: 400,
+          message: 'Video transcription was not generated yet.',
+        })
       }
 
       const promptMessage = template.replace(
@@ -36,20 +37,33 @@ export async function generateAICompletionRoute(app: FastifyInstance) {
         temperature,
       })
 
-      return res.status(200).send({ response })
+      return res.status(200).send({
+        statusCode: 200,
+        response,
+      })
     } catch (error) {
       if (error instanceof ZodError) {
         return res.status(400).send({
+          statusCode: 400,
           message: 'Invalid fields',
           errors: error.issues,
         })
       } else if (error instanceof APIError) {
-        return res.status(400).send({ message: error.message })
+        return res.status(400).send({
+          statusCode: 400,
+          message: error.message,
+        })
       } else if (error instanceof Error) {
-        return res.status(400).send({ message: error.message })
+        return res.status(400).send({
+          statusCode: 400,
+          message: error.message,
+        })
       }
 
-      return res.status(500).send({ message: 'Internal server error!' })
+      return res.status(500).send({
+        statusCode: 500,
+        message: 'Internal server error!',
+      })
     }
   })
 }

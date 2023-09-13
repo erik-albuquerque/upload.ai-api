@@ -45,20 +45,33 @@ export async function createTranscriptionRoute(app: FastifyInstance) {
           },
         })
 
-        return res.status(200).send({ transcription })
+        return res.status(200).send({
+          statusCode: 200,
+          transcription,
+        })
       } catch (error) {
         if (error instanceof ZodError) {
           return res.status(400).send({
+            statusCode: 400,
             message: 'Invalid fields',
             errors: error.issues,
           })
         } else if (error instanceof APIError) {
-          return res.status(400).send({ message: error.message })
+          return res.status(400).send({
+            statusCode: 400,
+            message: error.message,
+          })
         } else if (error instanceof Error) {
-          return res.status(400).send({ message: error.message })
+          return res.status(400).send({
+            statusCode: 400,
+            message: error.message,
+          })
         }
 
-        return res.status(500).send({ message: 'Internal server error!' })
+        return res.status(500).send({
+          statusCode: 500,
+          message: 'Internal server error!',
+        })
       }
     },
   )
