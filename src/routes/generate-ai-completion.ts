@@ -1,3 +1,5 @@
+import { streamToResponse, OpenAIStream } from 'ai'
+
 import { APIError } from 'openai'
 import { ZodError } from 'zod'
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
@@ -35,11 +37,16 @@ export async function generateAICompletionRoute(app: FastifyInstance) {
         model: 'gpt-3.5-turbo-16k',
         messages: [{ role: 'user', content: promptMessage }],
         temperature,
+        stream: true,
       })
 
-      return res.status(200).send({
-        statusCode: 200,
-        response,
+      const stream = OpenAIStream(response)
+
+      streamToResponse(stream, res.raw, {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        },
       })
     } catch (error) {
       if (error instanceof ZodError) {
