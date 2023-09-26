@@ -9,8 +9,6 @@ import { fastifyMultipart } from '@fastify/multipart'
 
 import { prisma } from '../lib'
 
-import { bytesToMB } from '../utils'
-
 const pump = promisify(pipeline)
 
 const MB_BYTES = 1_048_576
@@ -34,25 +32,6 @@ export async function uploadVideoRoute(app: FastifyInstance) {
         return res.status(400).send({
           statusCode: 400,
           message: 'Missing file input.',
-        })
-      }
-
-      // Return a Buffer with the stream content
-      await fileData.toBuffer().catch((error) => {
-        console.log('file buffer error: ', error.message)
-        // This error will be dealt with below ↓
-      })
-
-      const fileSize = fileData.file.bytesRead
-
-      const fileSizeInMB = bytesToMB(fileSize)
-
-      const maxFileSizeInMB = bytesToMB(MAX_FILE_SIZE)
-
-      if (fileSize > MAX_FILE_SIZE) {
-        return res.status(413).send({
-          statusCode: 413,
-          message: `The file must not be larger than ${maxFileSizeInMB}MB, but was ${fileSizeInMB}MB.`,
         })
       }
 

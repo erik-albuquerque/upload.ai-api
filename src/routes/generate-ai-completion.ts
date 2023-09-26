@@ -11,9 +11,7 @@ import { completionSchema } from '../schemas'
 export async function generateAICompletionRoute(app: FastifyInstance) {
   app.post('/ai/completion', async (req: FastifyRequest, res: FastifyReply) => {
     try {
-      const { videoId, template, temperature } = completionSchema.parse(
-        req.body,
-      )
+      const { videoId, prompt, temperature } = completionSchema.parse(req.body)
 
       const video = await prisma.video.findFirstOrThrow({
         where: {
@@ -28,7 +26,7 @@ export async function generateAICompletionRoute(app: FastifyInstance) {
         })
       }
 
-      const promptMessage = template.replace(
+      const promptMessage = prompt.replace(
         '{transcription}',
         video.transcription,
       )
